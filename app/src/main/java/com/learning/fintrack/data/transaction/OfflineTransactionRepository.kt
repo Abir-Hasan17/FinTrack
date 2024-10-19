@@ -4,11 +4,11 @@ import com.learning.fintrack.domain.TransactionRepository
 import kotlinx.coroutines.flow.Flow
 
 class OfflineTransactionRepository(private val transactionDao: TransactionDao): TransactionRepository {
-    override suspend fun getAllTransactions(): Flow<List<Transaction>> {
+    override fun getAllTransactions(): Flow<List<Transaction>> {
         return transactionDao.getAllTransactions()
     }
 
-    override suspend fun getTransactionById(id: Int): Flow<Transaction?> {
+    override fun getTransactionById(id: Int): Flow<Transaction?> {
         return transactionDao.getTransactionById(id)
     }
 

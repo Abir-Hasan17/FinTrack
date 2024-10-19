@@ -2,7 +2,12 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.devtools.ksp") version "2.0.21-1.0.25"
+
+    //for ksp
+    id("com.google.devtools.ksp")
+
+    //for dagger hilt
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -65,4 +70,14 @@ dependencies {
 
     //coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    //hilt
+    implementation("com.google.dagger:hilt-android:2.51.1")
+    ksp("com.google.dagger:hilt-compiler:2.51.1")
+    implementation ("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    //life cycle viewmodel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
+
+
 }

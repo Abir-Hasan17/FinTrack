@@ -4,9 +4,9 @@ import com.learning.fintrack.data.account.Account
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
-    suspend fun getAllAccounts(): Flow<List<Account>>
+     fun getAllAccounts(): Flow<List<Account>>
 
-    suspend fun getAccountById(id: Int): Flow<Account>
+     fun getAccountById(id: Int): Flow<Account>
 
     suspend fun insertAccount(account: Account)
 

@@ -4,9 +4,9 @@ import com.learning.fintrack.data.transaction.Transaction
 import kotlinx.coroutines.flow.Flow
 
 interface TransactionRepository {
-    suspend fun getAllTransactions(): Flow<List<Transaction>>
+     fun getAllTransactions(): Flow<List<Transaction>>
 
-    suspend fun getTransactionById(id: Int): Flow<Transaction?>
+     fun getTransactionById(id: Int): Flow<Transaction?>
 
     suspend fun insertTransaction(transaction: Transaction)
 

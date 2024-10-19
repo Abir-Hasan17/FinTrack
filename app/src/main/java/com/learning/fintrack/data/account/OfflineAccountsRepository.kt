@@ -4,11 +4,11 @@ import com.learning.fintrack.domain.AccountRepository
 import kotlinx.coroutines.flow.Flow
 
 class OfflineAccountsRepository(private val accountDao: AccountDao) : AccountRepository {
-    override suspend fun getAllAccounts(): Flow<List<Account>> {
+    override fun getAllAccounts(): Flow<List<Account>> {
         return accountDao.getAllAccounts()
     }
 
-    override suspend fun getAccountById(id: Int): Flow<Account> {
+    override fun getAccountById(id: Int): Flow<Account> {
         return accountDao.getAccountById(id)
     }
 

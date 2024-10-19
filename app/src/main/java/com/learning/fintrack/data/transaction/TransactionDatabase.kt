@@ -6,19 +6,19 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(entities = [Transaction::class], version = 1, exportSchema = false)
-abstract class TransactionDataBase : RoomDatabase(){
+abstract class TransactionDatabase : RoomDatabase(){
 
     abstract fun transactionDao(): TransactionDao
 
     companion object{
         @Volatile
-        private var instance: TransactionDataBase? = null
+        private var instance: TransactionDatabase? = null
 
-        fun getDatabase(context: Context): TransactionDataBase {
+        fun getDatabase(context: Context): TransactionDatabase {
             return instance ?: synchronized(this) {
                 Room.databaseBuilder(
                     context,
-                    TransactionDataBase::class.java,
+                    TransactionDatabase::class.java,
                     "transactions_database"
                 ).fallbackToDestructiveMigration().build().also { instance = it }
             }

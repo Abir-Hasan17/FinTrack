@@ -8,7 +8,7 @@ data class Transaction(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val amount: Double,
     val description: String,
-    val type: String,
+    val transactionType: String,
     val dateAdded: Long,
     val dateOfTransaction: Long
 )
