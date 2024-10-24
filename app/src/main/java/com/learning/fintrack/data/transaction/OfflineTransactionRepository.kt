@@ -12,6 +12,10 @@ class OfflineTransactionRepository(private val transactionDao: TransactionDao): 
         return transactionDao.getTransactionById(id)
     }
 
+    override fun getTransactionByAccountId(accountId: Int): Flow<List<Transaction>> {
+        return transactionDao.getTransactionByAccountId(accountId)
+    }
+
     override suspend fun insertTransaction(transaction: Transaction) {
         return transactionDao.insertTransaction(transaction)
     }

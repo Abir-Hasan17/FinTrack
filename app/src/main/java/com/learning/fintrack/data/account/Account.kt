@@ -2,6 +2,7 @@ package com.learning.fintrack.data.account
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.learning.fintrack.presentation.ui.accountDetail.LongAccountDetails
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -48,8 +49,25 @@ fun Account.formattedTotalLent(): String {
     return NumberFormat.getCurrencyInstance().format(totalLent)
 }
 
-fun Account.formatedDate(): String {
+fun Account.formatedDateCreated(): String {
     val date = Date(dateCreated)
     val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     return format.format(date)
+}
+
+fun Account.toLongAccountDetails(): LongAccountDetails {
+    return LongAccountDetails(
+        id = id,
+        name = name,
+        startingBalance = formattedStartingBalance(),
+        balance = formattedBalance(),
+        totalIncome = formattedTotalIncome(),
+        totalExpense = formattedTotalExpense(),
+        totalBorrowed = formattedTotalBorrowed(),
+        totalLent = formattedTotalLent(),
+        currency = currency,
+        description = description ?: "",
+        dateCreated = formatedDateCreated(),
+        isActive = isActive
+    )
 }
