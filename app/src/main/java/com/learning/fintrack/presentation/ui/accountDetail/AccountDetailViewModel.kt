@@ -3,6 +3,7 @@ package com.learning.fintrack.presentation.ui.accountDetail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.learning.fintrack.data.account.Account
 import com.learning.fintrack.data.account.toLongAccountDetails
 import com.learning.fintrack.domain.AccountRepository
 import com.learning.fintrack.domain.TransactionRepository
@@ -29,6 +30,14 @@ class AccountDetailViewModel @Inject constructor(
             initialValue = AccountDetailUiState()
         )
 
+    suspend fun deleteAccount(){
+        accountRepository.deleteAccount(uiState.value.longAccountDetails.toAccount())
+    }
+
+    suspend fun deactivateAccount(){
+        accountRepository.updateAccount(uiState.value.longAccountDetails.toAccount().copy(isActive = false))
+    }
+
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
@@ -51,5 +60,20 @@ data class LongAccountDetails(
     val description: String = "",
     val dateCreated: String = "",
     val isActive: Boolean = true
+)
+
+fun LongAccountDetails.toAccount() = Account(
+    id = id,
+    name = name,
+    startingBalance = startingBalance.toDouble(),
+    balance = balance.toDouble(),
+    totalIncome = totalIncome.toDouble(),
+    totalExpense = totalExpense.toDouble(),
+    totalBorrowed = totalBorrowed.toDouble(),
+    totalLent = totalLent.toDouble(),
+    currency = currency,
+    description = description,
+    dateCreated = dateCreated.toLong(),
+    isActive = isActive
 )
 

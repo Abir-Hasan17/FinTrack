@@ -5,17 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.learning.fintrack.data.account.Account
 import com.learning.fintrack.data.transaction.Transaction
 import com.learning.fintrack.data.transaction.TransactionType
 import com.learning.fintrack.domain.AccountRepository
 import com.learning.fintrack.domain.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,40 +37,48 @@ class AddTransactionViewModel @Inject constructor(
         )
     }
 
-    suspend fun addTransaction() {
+    suspend fun addTransactionFromAddTransactionScreen() {
         if (validateInput()) {
-            transactionRepository.insertTransaction(transactionUiState.addTransactionDetail.toTransaction())
-
-            updateAccountInfo()
+            addTransaction(transaction = transactionUiState.addTransactionDetail.toTransaction())
+            resetUiState()
         }
     }
 
-    private suspend fun updateAccountInfo(){
-        val account = accountRepository.getAccountById(accountId).filterNotNull().first()
-        when (transactionUiState.addTransactionDetail.transactionType) {
-            TransactionType.INCOME -> accountRepository.updateAccount(
+    private suspend fun addTransaction(transaction: Transaction){
+        transactionRepository.insertTransaction(transaction)
+        updateAccountInfoOnAddTransaction(transaction = transaction)
+    }
+
+    private fun resetUiState() {
+        transactionUiState = AddTransactionUiState()
+    }
+
+    private suspend fun updateAccountInfoOnAddTransaction(transaction: Transaction){
+        val account = accountRepository.getAccountById(transaction.accountId).filterNotNull().first()
+        when (transaction.transactionType) {
+            TransactionType.INCOME.toString() -> accountRepository.updateAccount(
                 account.copy(
-                    totalIncome = account.totalIncome + transactionUiState.addTransactionDetail.amount.toDouble(),
-                    balance = account.balance + transactionUiState.addTransactionDetail.amount.toDouble()
+                    totalIncome = account.totalIncome + transaction.amount,
+                    balance = account.balance + transaction.amount
                 )
             )
 
-            TransactionType.EXPENSE -> accountRepository.updateAccount(
+            TransactionType.EXPENSE.toString() -> accountRepository.updateAccount(
                 account.copy(
-                    totalExpense = account.totalExpense + transactionUiState.addTransactionDetail.amount.toDouble(),
-                    balance = account.balance - transactionUiState.addTransactionDetail.amount.toDouble()
+                    totalExpense = account.totalExpense + transaction.amount,
+                    balance = account.balance - transaction.amount
                 )
             )
 
-            TransactionType.LEND -> accountRepository.updateAccount(
+            TransactionType.LEND.toString() -> accountRepository.updateAccount(
                 account.copy(
-                    totalLent = account.totalLent + transactionUiState.addTransactionDetail.amount.toDouble(),
+                    totalLent = account.totalLent + transaction.amount,
                 )
             )
 
-            TransactionType.BORROW -> accountRepository.updateAccount(
+            TransactionType.BORROW.toString() -> accountRepository.updateAccount(
                 account.copy(
-                    totalBorrowed = account.totalBorrowed + transactionUiState.addTransactionDetail.amount.toDouble(),
+                    totalBorrowed = account.totalBorrowed + transaction.amount,
                 )
             )
         }
@@ -84,7 +88,6 @@ class AddTransactionViewModel @Inject constructor(
 data class AddTransactionUiState(
     val addTransactionDetail: AddTransactionDetail = AddTransactionDetail(),
     val isEntryValid: Boolean = false
-
 )
 
 data class AddTransactionDetail(
