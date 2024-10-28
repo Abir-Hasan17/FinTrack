@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.learning.fintrack.data.transaction.Transaction
 import com.learning.fintrack.data.transaction.TransactionType
+import com.learning.fintrack.data.transaction.toFormatedDateOfTransaction
 import com.learning.fintrack.domain.AccountRepository
 import com.learning.fintrack.domain.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,90 +34,55 @@ class TransactionsViewModel @Inject constructor(
                 initialValue = TransactionUiState()
             )
 
-    suspend fun deleteTransaction(transaction: Transaction){
-        updateAccountInfoOnDeleteTransaction(transaction)
+    suspend fun deleteTransaction(transaction: Transaction) {
         transactionRepository.deleteTransaction(transaction)
+        accountRepository.updateAccountBalancesByAccountId(transaction.accountId)
     }
 
-    suspend fun borrowReturned(transaction: Transaction){
-        addTransaction(transaction.copy(transactionType = TransactionType.EXPENSE.toString()))
+    suspend fun borrowReturned(transaction: Transaction) {
+        addTransaction(
+            transaction.copy(
+                transactionType = TransactionType.BORROW_RETURN.toString(),
+                amount = transaction.amount,
+                transactionName = "${transaction.transactionName} returned!!",
+                transactionDescription = "Borrow transactionName: Was Borrowed on ${transaction.toFormatedDateOfTransaction()} \n" +
+                        " ${transaction.transactionDescription}"
+            )
+        )
         deleteTransaction(transaction)
     }
 
     suspend fun lendReturned(transaction: Transaction) {
+        addTransaction(
+            transaction.copy(
+                transactionType = TransactionType.LEND_RETURN.toString(),
+                amount = transaction.amount,
+                transactionName = "${transaction.transactionName} returned!!",
+                transactionDescription = "Lend transactionName: Was Lent on ${transaction.toFormatedDateOfTransaction()} \n" +
+                        " ${transaction.transactionDescription}"
+            )
+        )
         deleteTransaction(transaction)
     }
 
-    private suspend fun addTransaction(transaction: Transaction){
+    suspend fun lendExpended(transaction: Transaction) {
+        addTransaction(
+            transaction.copy(
+                transactionType = TransactionType.EXPENSE.toString(),
+                amount = transaction.amount,
+                transactionName = "${transaction.transactionName} expended!!",
+                transactionDescription = "Lend Expended that was taken on ${transaction.toFormatedDateOfTransaction()}"
+            )
+        )
+    }
+
+    private suspend fun addTransaction(transaction: Transaction) {
         transactionRepository.insertTransaction(transaction)
-        updateAccountInfoOnAddTransaction(transaction = transaction)
+        accountRepository.updateAccountBalancesByAccountId(transaction.accountId)
     }
 
-    private suspend fun updateAccountInfoOnAddTransaction(transaction: Transaction){
-        val account = accountRepository.getAccountById(transaction.accountId).filterNotNull().first()
-        when (transaction.transactionType) {
-            TransactionType.INCOME.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalIncome = account.totalIncome + transaction.amount,
-                    balance = account.balance + transaction.amount
-                )
-            )
 
-            TransactionType.EXPENSE.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalExpense = account.totalExpense + transaction.amount,
-                    balance = account.balance - transaction.amount
-                )
-            )
-
-            TransactionType.LEND.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalLent = account.totalLent + transaction.amount,
-                    balance = account.balance - transaction.amount
-                )
-            )
-
-            TransactionType.BORROW.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalBorrowed = account.totalBorrowed + transaction.amount,
-                )
-            )
-        }
-    }
-
-    private suspend fun updateAccountInfoOnDeleteTransaction(transaction: Transaction) {
-        val account = accountRepository.getAccountById(transaction.accountId).filterNotNull().first()
-        when(transaction.transactionType){
-            TransactionType.INCOME.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalIncome = account.totalIncome - transaction.amount,
-                    balance = account.balance - transaction.amount
-                )
-            )
-
-            TransactionType.EXPENSE.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalIncome = account.totalExpense - transaction.amount,
-                    balance = account.balance + transaction.amount
-                )
-            )
-
-            TransactionType.BORROW.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalIncome = account.totalBorrowed - transaction.amount,
-                )
-            )
-
-            TransactionType.LEND.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalIncome = account.totalLent - transaction.amount,
-                    balance = account.balance + transaction.amount
-                )
-            )
-        }
-    }
-
-    companion object{
+    companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
 
@@ -124,4 +90,5 @@ class TransactionsViewModel @Inject constructor(
 
 data class TransactionUiState(
     val transactionList: List<Transaction> = listOf(),
+    val selectedTransactionId: Int = -1,
 )

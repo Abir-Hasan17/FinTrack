@@ -26,8 +26,8 @@ class DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideAccountRepository(database: AccountDatabase): AccountRepository {
-        return OfflineAccountsRepository(database.accountDao())
+    fun provideAccountRepository(database: AccountDatabase, transactionRepository: TransactionRepository): AccountRepository {
+        return OfflineAccountsRepository(database.accountDao(), transactionRepository)
     }
 
     @Provides

@@ -51,8 +51,8 @@ data class AddAccountDetails(
 
 fun AddAccountDetails.toAccount(): Account = Account(
     id = 0,
-    name = name,
+    accountName = name,
     startingBalance = startingBalance.toDoubleOrNull() ?: 0.0,
     currency = currency,
-    description = description ?: "",
+    accountDescription = description ?: "",
 )

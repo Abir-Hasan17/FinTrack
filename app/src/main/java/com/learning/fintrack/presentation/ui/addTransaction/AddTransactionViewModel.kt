@@ -10,8 +10,6 @@ import com.learning.fintrack.data.transaction.TransactionType
 import com.learning.fintrack.domain.AccountRepository
 import com.learning.fintrack.domain.TransactionRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,7 +24,7 @@ class AddTransactionViewModel @Inject constructor(
 
     private fun validateInput(uiState: AddTransactionDetail = transactionUiState.addTransactionDetail): Boolean {
         return with(uiState) {
-            amount.isNotBlank() && description.isNotBlank() && dateOfTransaction.isNotBlank()
+            amount.isNotBlank() && transactionName.isNotBlank() && dateOfTransaction.isNotBlank()
         }
     }
 
@@ -39,50 +37,18 @@ class AddTransactionViewModel @Inject constructor(
 
     suspend fun addTransactionFromAddTransactionScreen() {
         if (validateInput()) {
-            addTransaction(transaction = transactionUiState.addTransactionDetail.toTransaction())
+            transactionRepository.insertTransaction(transactionUiState.addTransactionDetail.toTransaction())
+            accountRepository.updateAccountBalancesByAccountId(accountId)
             resetUiState()
         }
     }
 
-    private suspend fun addTransaction(transaction: Transaction){
-        transactionRepository.insertTransaction(transaction)
-        updateAccountInfoOnAddTransaction(transaction = transaction)
-    }
 
     private fun resetUiState() {
         transactionUiState = AddTransactionUiState()
     }
 
-    private suspend fun updateAccountInfoOnAddTransaction(transaction: Transaction){
-        val account = accountRepository.getAccountById(transaction.accountId).filterNotNull().first()
-        when (transaction.transactionType) {
-            TransactionType.INCOME.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalIncome = account.totalIncome + transaction.amount,
-                    balance = account.balance + transaction.amount
-                )
-            )
 
-            TransactionType.EXPENSE.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalExpense = account.totalExpense + transaction.amount,
-                    balance = account.balance - transaction.amount
-                )
-            )
-
-            TransactionType.LEND.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalLent = account.totalLent + transaction.amount,
-                )
-            )
-
-            TransactionType.BORROW.toString() -> accountRepository.updateAccount(
-                account.copy(
-                    totalBorrowed = account.totalBorrowed + transaction.amount,
-                )
-            )
-        }
-    }
 }
 
 data class AddTransactionUiState(
@@ -94,7 +60,8 @@ data class AddTransactionDetail(
     val id: Int = 0,
     val accountId: Int = 0,
     val amount: String = "",
-    val description: String = "",
+    val transactionName: String = "",
+    val transactionDescription: String? = null,
     val transactionType: TransactionType = TransactionType.EXPENSE,
     val dateAdded: Long = System.currentTimeMillis(),
     val dateOfTransaction: String = "",
@@ -104,7 +71,8 @@ fun AddTransactionDetail.toTransaction(): Transaction = Transaction(
     id = id,
     accountId = accountId,
     amount = amount.toDoubleOrNull() ?: 0.0,
-    description = description,
+    transactionName = transactionName,
+    transactionDescription = transactionDescription,
     transactionType = transactionType.toString(),
     dateAdded = dateAdded,
     dateOfTransaction = dateOfTransaction.toLong()

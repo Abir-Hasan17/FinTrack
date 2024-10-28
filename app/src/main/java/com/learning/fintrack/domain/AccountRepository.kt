@@ -1,6 +1,7 @@
 package com.learning.fintrack.domain
 
 import com.learning.fintrack.data.account.Account
+import com.learning.fintrack.data.transaction.Transaction
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
@@ -13,5 +14,7 @@ interface AccountRepository {
     suspend fun updateAccount(account: Account)
 
     suspend fun deleteAccount(account: Account)
+
+    suspend fun updateAccountBalancesByAccountId(accountId: Int)
 
 }

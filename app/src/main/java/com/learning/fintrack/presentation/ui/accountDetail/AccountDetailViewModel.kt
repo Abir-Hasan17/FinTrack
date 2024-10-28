@@ -64,7 +64,7 @@ data class LongAccountDetails(
 
 fun LongAccountDetails.toAccount() = Account(
     id = id,
-    name = name,
+    accountName = name,
     startingBalance = startingBalance.toDouble(),
     balance = balance.toDouble(),
     totalIncome = totalIncome.toDouble(),
@@ -72,7 +72,7 @@ fun LongAccountDetails.toAccount() = Account(
     totalBorrowed = totalBorrowed.toDouble(),
     totalLent = totalLent.toDouble(),
     currency = currency,
-    description = description,
+    accountDescription = description,
     dateCreated = dateCreated.toLong(),
     isActive = isActive
 )

@@ -12,7 +12,7 @@ import java.util.Locale
 data class Account(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val name: String,
+    val accountName: String,
     val startingBalance: Double,
     val balance: Double = startingBalance,
     val totalIncome: Double = 0.0,
@@ -20,7 +20,7 @@ data class Account(
     val totalBorrowed: Double = 0.0,
     val totalLent: Double = 0.0,
     val currency: String = "TK",
-    val description: String? = null,
+    val accountDescription: String? = null,
     val dateCreated: Long = System.currentTimeMillis(),
     val isActive: Boolean = true
 )
@@ -58,7 +58,7 @@ fun Account.formatedDateCreated(): String {
 fun Account.toLongAccountDetails(): LongAccountDetails {
     return LongAccountDetails(
         id = id,
-        name = name,
+        name = accountName,
         startingBalance = formattedStartingBalance(),
         balance = formattedBalance(),
         totalIncome = formattedTotalIncome(),
@@ -66,7 +66,7 @@ fun Account.toLongAccountDetails(): LongAccountDetails {
         totalBorrowed = formattedTotalBorrowed(),
         totalLent = formattedTotalLent(),
         currency = currency,
-        description = description ?: "",
+        description = accountDescription ?: "",
         dateCreated = formatedDateCreated(),
         isActive = isActive
     )

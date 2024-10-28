@@ -1,9 +1,13 @@
 package com.learning.fintrack.data.transaction
 
+import com.learning.fintrack.domain.AccountRepository
 import com.learning.fintrack.domain.TransactionRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class OfflineTransactionRepository(private val transactionDao: TransactionDao): TransactionRepository {
+class OfflineTransactionRepository @Inject constructor(
+    private val transactionDao: TransactionDao,
+) : TransactionRepository {
     override fun getAllTransactions(): Flow<List<Transaction>> {
         return transactionDao.getAllTransactions()
     }
@@ -17,14 +21,14 @@ class OfflineTransactionRepository(private val transactionDao: TransactionDao): 
     }
 
     override suspend fun insertTransaction(transaction: Transaction) {
-        return transactionDao.insertTransaction(transaction)
+        transactionDao.insertTransaction(transaction)
     }
 
     override suspend fun updateTransaction(transaction: Transaction) {
-        return transactionDao.updateTransaction(transaction)
+        transactionDao.updateTransaction(transaction)
     }
 
     override suspend fun deleteTransaction(transaction: Transaction) {
-        return transactionDao.deleteTransaction(transaction)
+        transactionDao.deleteTransaction(transaction)
     }
 }
