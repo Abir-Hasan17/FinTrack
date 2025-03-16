@@ -46,7 +46,7 @@ data class AddAccountDetails(
     val name: String = "",
     val startingBalance: String = "",
     val currency: String = "",
-    val description: String = "TK"
+    val description: String = ""
 )
 
 fun AddAccountDetails.toAccount(): Account = Account(

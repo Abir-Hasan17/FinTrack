@@ -26,27 +26,27 @@ data class Account(
 )
 
 fun Account.formattedStartingBalance(): String {
-    return NumberFormat.getCurrencyInstance().format(startingBalance)
+    return "$startingBalance $currency"
 }
 
 fun Account.formattedBalance(): String {
-    return NumberFormat.getCurrencyInstance().format(balance)
+    return "$balance $currency"
 }
 
 fun Account.formattedTotalIncome(): String {
-    return NumberFormat.getCurrencyInstance().format(totalIncome)
+    return "$totalIncome $currency"
 }
 
 fun Account.formattedTotalExpense(): String {
-    return NumberFormat.getCurrencyInstance().format(totalExpense)
+    return "$totalExpense $currency"
 }
 
 fun Account.formattedTotalBorrowed(): String {
-    return NumberFormat.getCurrencyInstance().format(totalBorrowed)
+    return "$totalBorrowed $currency"
 }
 
 fun Account.formattedTotalLent(): String {
-    return NumberFormat.getCurrencyInstance().format(totalLent)
+    return "$totalLent $currency"
 }
 
 fun Account.formatedDateCreated(): String {

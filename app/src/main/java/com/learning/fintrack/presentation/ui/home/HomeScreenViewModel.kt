@@ -32,3 +32,4 @@ class HomeScreenViewModel @Inject constructor(
 data class HomeUiState(
     val accountList: List<Account> = listOf()
 )
+

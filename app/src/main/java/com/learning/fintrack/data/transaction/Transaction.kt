@@ -22,11 +22,22 @@ data class Transaction(
 
 enum class TransactionType{
     INCOME,
-    EXPENSE,
     LEND,
     BORROW,
+    EXPENSE,
     LEND_RETURN,
     BORROW_RETURN
+}
+
+fun TransactionType.toText() : String{
+    return when(this){
+        TransactionType.INCOME -> "Income"
+        TransactionType.LEND -> "Lend"
+        TransactionType.BORROW -> "Borrow"
+        TransactionType.EXPENSE -> "Expense"
+        TransactionType.LEND_RETURN -> "Lend Return"
+        TransactionType.BORROW_RETURN -> "Borrow Return"
+    }
 }
 
 fun Transaction.toFormatedDateAdded() : String{
