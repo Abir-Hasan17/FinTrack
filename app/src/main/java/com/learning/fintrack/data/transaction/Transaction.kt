@@ -16,8 +16,8 @@ data class Transaction(
     val transactionName: String,
     val transactionDescription: String? = null,
     val transactionType: String,
-    val dateAdded: Long,
-    val dateOfTransaction: Long
+    val dateAdded: Long = System.currentTimeMillis(),
+    val dateOfTransaction: Long = System.currentTimeMillis()
 )
 
 enum class TransactionType{

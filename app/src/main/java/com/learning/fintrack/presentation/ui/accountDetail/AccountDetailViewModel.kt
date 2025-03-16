@@ -5,8 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.learning.fintrack.data.account.Account
 import com.learning.fintrack.data.account.toLongAccountDetails
+import com.learning.fintrack.data.transaction.Transaction
 import com.learning.fintrack.domain.AccountRepository
 import com.learning.fintrack.domain.TransactionRepository
+import com.learning.fintrack.presentation.ui.home.HomeScreenViewModel
+import com.learning.fintrack.presentation.ui.home.HomeScreenViewModel.Companion
+import com.learning.fintrack.presentation.ui.home.HomeUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,19 +27,26 @@ class AccountDetailViewModel @Inject constructor(
     private val accountId: Int =
         checkNotNull(savedStateHandle[AccountDetailDestination.accountIdArg])
 
-    val uiState: StateFlow<AccountDetailUiState> = accountRepository.getAccountById(accountId)
+    val accountDetailUiState: StateFlow<AccountDetailUiState> = accountRepository.getAccountById(accountId)
         .map { AccountDetailUiState(it.toLongAccountDetails()) }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
             initialValue = AccountDetailUiState()
         )
 
+    val recentTransactionsUiState: StateFlow<RecentTransactionsUiState> =
+        transactionRepository.getTransactionByAccountId(accountId).map { RecentTransactionsUiState(it) }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+            initialValue = RecentTransactionsUiState()
+        )
+
     suspend fun deleteAccount(){
-        accountRepository.deleteAccount(uiState.value.longAccountDetails.toAccount())
+        accountRepository.deleteAccount(accountDetailUiState.value.longAccountDetails.toAccount())
     }
 
     suspend fun deactivateAccount(){
-        accountRepository.updateAccount(uiState.value.longAccountDetails.toAccount().copy(isActive = false))
+        accountRepository.updateAccount(accountDetailUiState.value.longAccountDetails.toAccount().copy(isActive = false))
     }
 
     companion object {
@@ -45,6 +56,10 @@ class AccountDetailViewModel @Inject constructor(
 
 data class AccountDetailUiState(
     val longAccountDetails: LongAccountDetails = LongAccountDetails(),
+)
+
+data class RecentTransactionsUiState(
+    val recentTransactions: List<Transaction> = listOf()
 )
 
 data class LongAccountDetails(

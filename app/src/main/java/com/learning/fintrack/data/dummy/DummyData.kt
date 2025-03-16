@@ -1,6 +1,7 @@
 package com.learning.fintrack.data.dummy
 
 import com.learning.fintrack.data.account.Account
+import com.learning.fintrack.data.transaction.Transaction
 
 val account1 = Account(
     id = 1,
@@ -16,3 +17,13 @@ val account1 = Account(
 )
 
 val listOfAccounts = listOf(account1, account1.copy(id = 2, accountName = "Card"), account1.copy(id = 3, accountName = "Bank"))
+
+val transaction1 = Transaction(
+    accountId = 1,
+    id = 1,
+    amount = 100.0,
+    transactionName = "food",
+    transactionDescription = "vat dal dim vaji",
+    transactionType = "EXPENSE"
+)
+val listOfTransactions = listOf(transaction1, transaction1.copy(id = 2, transactionName = "food2"), transaction1.copy(id = 3, transactionName = "food3"))
